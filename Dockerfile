@@ -15,6 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY src/ ./src/
 
+# Copy ical_links.txt configuration file
+COPY ical_links.txt .
+RUN chown botuser:botuser ical_links.txt
+
 # Switch to non-root user
 USER botuser
 
