@@ -5,6 +5,7 @@ services:
     image: ghcr.io/trevordavies095/cdl-match-notifier-discord-bot:latest
     container_name: cdl-discord-bot
     restart: unless-stopped
+    network_mode: bridge
     environment:
       # Required - replace with your actual values
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
