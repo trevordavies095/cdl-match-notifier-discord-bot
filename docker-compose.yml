@@ -5,8 +5,19 @@ services:
     image: ghcr.io/trevordavies095/cdl-discord-bot:latest
     container_name: cdl-discord-bot
     restart: unless-stopped
-    env_file:
-      - .env
+    # Environment variables should be set in Portainer's stack editor (Environment tab)
+    # Required:
+    #   - DISCORD_BOT_TOKEN: Your Discord bot token
+    #   - DISCORD_CHANNEL_ID: Discord channel ID to send notifications
+    # Optional:
+    #   - TEAM_IDS: Comma-separated team IDs for ICS feeds
+    #   - TEAMS: Comma-separated team names to filter matches
+    #   - NOTIFY_MINUTES_BEFORE: Minutes before match to notify (default: 15)
+    #   - SCHEDULE_FETCH_INTERVAL: Minutes between schedule fetches (default: 60)
+    #   - TEAM_ICS_FILE: Path to ical_links.txt file (default: ical_links.txt)
+    #   - DISCORD_MENTION_ROLE_ID: Role ID to mention in notifications
+    #   - DISCORD_MENTION_ROLE_NAME: Role name to mention in notifications
+    #   - DISCORD_PING_EVERYONE: Set to "true" to ping @everyone (default: false)
     volumes:
       - ./data:/app/data
     healthcheck:
