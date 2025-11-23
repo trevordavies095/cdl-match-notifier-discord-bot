@@ -19,6 +19,7 @@ class DiscordClient:
         token: str,
         channel_id: str,
         mention_role_id: Optional[str] = None,
+        mention_role_name: Optional[str] = None,
         ping_everyone: bool = False
     ):
         """
@@ -27,12 +28,14 @@ class DiscordClient:
         Args:
             token: Discord bot token
             channel_id: Channel ID to send notifications to
-            mention_role_id: Optional role ID to mention
+            mention_role_id: Optional role ID to mention (takes precedence over role_name)
+            mention_role_name: Optional role name to mention (looked up after bot connects)
             ping_everyone: Whether to ping @everyone
         """
         self.token = token
         self.channel_id = int(channel_id)
         self.mention_role_id = int(mention_role_id) if mention_role_id else None
+        self.mention_role_name = mention_role_name
         self.ping_everyone = ping_everyone
         
         intents = discord.Intents.default()
@@ -46,6 +49,10 @@ class DiscordClient:
         async def on_ready():
             logger.info(f"Discord bot logged in as {self.bot.user}")
             logger.info(f"Bot is ready, monitoring channel {self.channel_id}")
+            
+            # Resolve role name to ID if provided and role_id not already set
+            if self.mention_role_name and not self.mention_role_id:
+                await self._resolve_role_name()
     
     async def start(self):
         """Start the Discord bot"""
@@ -54,6 +61,46 @@ class DiscordClient:
     async def close(self):
         """Close the Discord bot connection"""
         await self.bot.close()
+    
+    async def _resolve_role_name(self):
+        """
+        Resolve role name to role ID by searching in the guild
+        
+        This is called after the bot connects to Discord.
+        """
+        try:
+            channel = self.bot.get_channel(self.channel_id)
+            if not channel:
+                logger.warning(
+                    f"Cannot resolve role name '{self.mention_role_name}': "
+                    f"Channel {self.channel_id} not found"
+                )
+                return
+            
+            guild = channel.guild
+            if not guild:
+                logger.warning(
+                    f"Cannot resolve role name '{self.mention_role_name}': "
+                    f"Guild not found for channel {self.channel_id}"
+                )
+                return
+            
+            # Search for role by name (case-insensitive)
+            role = discord.utils.get(guild.roles, name=self.mention_role_name)
+            
+            if role:
+                self.mention_role_id = role.id
+                logger.info(
+                    f"Resolved role name '{self.mention_role_name}' to role ID {role.id}"
+                )
+            else:
+                logger.warning(
+                    f"Role '{self.mention_role_name}' not found in server '{guild.name}'. "
+                    f"Please check that the role exists and the name is spelled correctly. "
+                    f"The bot will continue without role mentions."
+                )
+        except Exception as e:
+            logger.error(f"Error resolving role name '{self.mention_role_name}': {e}")
     
     async def send_notification(self, match: Match) -> bool:
         """

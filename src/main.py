@@ -33,6 +33,7 @@ class CDLBot:
             token=self.config.discord_bot_token,
             channel_id=self.config.discord_channel_id,
             mention_role_id=self.config.discord_mention_role_id,
+            mention_role_name=self.config.discord_mention_role_name,
             ping_everyone=self.config.discord_ping_everyone
         )
         self.notification_service = NotificationService(

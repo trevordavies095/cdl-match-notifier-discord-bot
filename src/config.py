@@ -21,7 +21,15 @@ class Config:
         self.discord_bot_token = self._get_required("DISCORD_BOT_TOKEN")
         self.discord_channel_id = self._get_required("DISCORD_CHANNEL_ID")
         self.discord_mention_role_id = os.getenv("DISCORD_MENTION_ROLE_ID")
+        self.discord_mention_role_name = os.getenv("DISCORD_MENTION_ROLE_NAME")
         self.discord_ping_everyone = os.getenv("DISCORD_PING_EVERYONE", "false").lower() == "true"
+        
+        # Role ID takes precedence over role name if both are provided
+        if self.discord_mention_role_id and self.discord_mention_role_name:
+            logger.info(
+                f"Both DISCORD_MENTION_ROLE_ID and DISCORD_MENTION_ROLE_NAME are set. "
+                f"Using role ID (takes precedence)."
+            )
         
         # Team filtering
         teams_str = os.getenv("TEAMS", "")
