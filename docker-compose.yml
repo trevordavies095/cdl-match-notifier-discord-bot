@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  cdl-notifier:
+    build: .
+    container_name: cdl-discord-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+

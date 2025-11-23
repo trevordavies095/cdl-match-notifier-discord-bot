@@ -1,0 +1,23 @@
+Boston Breach: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/bltbbbcefb8c6e34f6d.ics
+
+Carolina Royal Ravens: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt74913de2aae578d0.ics
+
+Los Angeles Guerrillas M8: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/bltb5ab3bcd646a72df.ics
+
+Los Angeles Thieves: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt6bedb4aef72255d5.ics
+
+Miami Heretics: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt2a78698b336cfbe6.ics
+
+Minnesota G2: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/bltf5d6e733267e3304.ics
+
+New York Cloud9: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt5ec51dbb0c4d40cd.ics
+
+Riyadh Falcons: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt32eea035bb0bec7f.ics
+
+Texas OpTic: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt19237b20a0dd1b07.ics
+
+Toronto KOI: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt79528f43f7f383b7.ics
+
+Vancouver Surge: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/bltdf2cc6ed3d3d0bd8.ics
+
+Vegas FaZe: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/bltd84beef53d2aa9db.ics
