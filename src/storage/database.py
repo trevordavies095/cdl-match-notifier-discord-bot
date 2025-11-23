@@ -1,4 +1,5 @@
 """SQLite database operations"""
+import os
 import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -14,7 +15,30 @@ class Database:
     def __init__(self, db_path: str = "data/bot.db"):
         """Initialize database connection"""
         self.db_path = Path(db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Ensure parent directory exists with proper error handling
+        try:
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        except PermissionError as e:
+            raise PermissionError(
+                f"Cannot create database directory '{self.db_path.parent}': {e}\n"
+                f"If running in Docker, ensure the data directory has write permissions for UID 1000.\n"
+                f"Try: chmod 777 data (or chown -R 1000:1000 data)"
+            ) from e
+        except OSError as e:
+            raise OSError(
+                f"Cannot create database directory '{self.db_path.parent}': {e}\n"
+                f"Please check that the path is valid and you have write permissions."
+            ) from e
+        
+        # Verify directory is writable
+        if not os.access(self.db_path.parent, os.W_OK):
+            raise PermissionError(
+                f"Database directory '{self.db_path.parent}' is not writable.\n"
+                f"If running in Docker, ensure the data directory has write permissions for UID 1000.\n"
+                f"Try: chmod 777 data (or chown -R 1000:1000 data)"
+            )
+        
         self._init_db()
     
     def _init_db(self):
@@ -62,12 +86,25 @@ class Database:
     @contextmanager
     def _get_connection(self):
         """Get database connection with context manager"""
-        conn = sqlite3.connect(str(self.db_path))
-        conn.row_factory = sqlite3.Row
         try:
-            yield conn
-        finally:
-            conn.close()
+            conn = sqlite3.connect(str(self.db_path))
+            conn.row_factory = sqlite3.Row
+            try:
+                yield conn
+            finally:
+                conn.close()
+        except sqlite3.OperationalError as e:
+            error_msg = str(e)
+            if "unable to open database file" in error_msg.lower():
+                raise sqlite3.OperationalError(
+                    f"Cannot open database file '{self.db_path}': {e}\n"
+                    f"This is usually a permissions issue.\n"
+                    f"If running in Docker:\n"
+                    f"  1. Ensure the data directory exists: mkdir -p data\n"
+                    f"  2. Set proper permissions: chmod 777 data (or chown -R 1000:1000 data)\n"
+                    f"  3. Verify the volume mount in docker-compose.yml is correct"
+                ) from e
+            raise
     
     def upsert_match(self, match: Match):
         """Insert or update a match"""

@@ -21,6 +21,11 @@ services:
       - DISCORD_PING_EVERYONE=${DISCORD_PING_EVERYONE:-false}
     # Note: ical_links.txt is bundled in the Docker image, no volume mount needed
     volumes:
+      # Data directory for SQLite database
+      # IMPORTANT: Ensure the ./data directory exists and has write permissions for UID 1000
+      # The container runs as botuser (UID 1000). If you get permission errors:
+      #   mkdir -p data
+      #   chmod 777 data  (or chown -R 1000:1000 data for more secure setup)
       - ./data:/app/data
     healthcheck:
       test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
