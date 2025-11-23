@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   cdl-notifier:
-    build: .
+    image: ghcr.io/trevordavies095/cdl-discord-bot:latest
     container_name: cdl-discord-bot
     restart: unless-stopped
     env_file:
