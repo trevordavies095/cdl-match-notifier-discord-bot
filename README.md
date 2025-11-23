@@ -4,12 +4,12 @@ A Discord bot that automatically notifies you about upcoming Call of Duty League
 
 ## Features
 
-- 🔔 Automatic match notifications 15 minutes before start time
-- 📅 Fetches schedules from CDL ICS feeds and official schedule page
-- 🎯 Filter matches by specific teams (optional)
-- 💾 Persistent storage using SQLite
-- 🐳 Dockerized for easy deployment
-- 🔄 Automatic schedule updates
+- Automatic match notifications 15 minutes before start time
+- Fetches schedules from CDL ICS feeds and official schedule page
+- Filter matches by specific teams (optional)
+- Persistent storage using SQLite
+- Dockerized for easy deployment
+- Automatic schedule updates
 
 ## Setup
 
@@ -46,20 +46,54 @@ A Discord bot that automatically notifies you about upcoming Call of Duty League
 
 ### Docker Deployment
 
-1. Build and run with Docker Compose:
+1. Build the Docker image:
+   ```bash
+   docker-compose build
+   ```
+
+2. Run the bot:
    ```bash
    docker-compose up -d
    ```
 
-2. View logs:
+3. View logs:
    ```bash
    docker-compose logs -f
    ```
 
-3. Stop the bot:
+4. Stop the bot:
    ```bash
    docker-compose down
    ```
+
+## Testing
+
+The bot includes a test script for verifying Discord notifications work correctly.
+
+### Immediate Test Notification
+
+Send a test notification immediately (bypasses timing):
+```bash
+python -m src.test_notification --immediate
+```
+
+### Scheduled Test Notification
+
+Create a test match in the database that will trigger a notification:
+```bash
+python -m src.test_notification --minutes 20
+```
+
+This creates a test match starting in 20 minutes (default). The notification service will pick it up and send it at the configured time.
+
+### Custom Team Names
+
+You can customize the team names in test notifications:
+```bash
+python -m src.test_notification --minutes 15 --team1 "Team A" --team2 "Team B"
+```
+
+**Note:** The test script requires the same `.env` configuration as the main bot (`DISCORD_BOT_TOKEN` and `DISCORD_CHANNEL_ID`).
 
 ## Configuration Options
 

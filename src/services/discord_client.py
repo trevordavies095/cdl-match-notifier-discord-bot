@@ -36,7 +36,6 @@ class DiscordClient:
         self.ping_everyone = ping_everyone
         
         intents = discord.Intents.default()
-        intents.message_content = True
         self.bot = commands.Bot(command_prefix='!', intents=intents)
         
         self._setup_events()
@@ -70,6 +69,13 @@ class DiscordClient:
             channel = self.bot.get_channel(self.channel_id)
             if not channel:
                 logger.error(f"Channel {self.channel_id} not found")
+                logger.error("Make sure the bot is in the server and the channel ID is correct")
+                return False
+            
+            # Check if bot has permission to send messages
+            if not channel.permissions_for(channel.guild.me).send_messages:
+                logger.error(f"Bot lacks permission to send messages in channel {self.channel_id}")
+                logger.error("Please ensure the bot has 'Send Messages' permission in this channel")
                 return False
             
             message = self._format_message(match)
@@ -81,6 +87,11 @@ class DiscordClient:
             )
             return True
         
+        except discord.errors.Forbidden as e:
+            logger.error(f"Permission denied: {e}")
+            logger.error("The bot needs 'Send Messages' permission in the channel.")
+            logger.error("Check the channel permissions and ensure the bot role has access.")
+            return False
         except discord.errors.HTTPException as e:
             logger.error(f"Discord API error sending notification: {e}")
             return False
