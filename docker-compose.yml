@@ -5,19 +5,20 @@ services:
     image: ghcr.io/trevordavies095/cdl-discord-bot:latest
     container_name: cdl-discord-bot
     restart: unless-stopped
-    # Environment variables should be set in Portainer's stack editor (Environment tab)
-    # Required:
-    #   - DISCORD_BOT_TOKEN: Your Discord bot token
-    #   - DISCORD_CHANNEL_ID: Discord channel ID to send notifications
-    # Optional:
-    #   - TEAM_IDS: Comma-separated team IDs for ICS feeds
-    #   - TEAMS: Comma-separated team names to filter matches
-    #   - NOTIFY_MINUTES_BEFORE: Minutes before match to notify (default: 15)
-    #   - SCHEDULE_FETCH_INTERVAL: Minutes between schedule fetches (default: 60)
-    #   - TEAM_ICS_FILE: Path to ical_links.txt file (default: ical_links.txt)
-    #   - DISCORD_MENTION_ROLE_ID: Role ID to mention in notifications
-    #   - DISCORD_MENTION_ROLE_NAME: Role name to mention in notifications
-    #   - DISCORD_PING_EVERYONE: Set to "true" to ping @everyone (default: false)
+    environment:
+      # Required - replace with your actual values
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - DISCORD_CHANNEL_ID=${DISCORD_CHANNEL_ID}
+      # Optional - uncomment and set as needed
+      # - TEAM_IDS=
+      # - TEAMS=
+      - NOTIFY_MINUTES_BEFORE=${NOTIFY_MINUTES_BEFORE:-15}
+      - SCHEDULE_FETCH_INTERVAL=${SCHEDULE_FETCH_INTERVAL:-60}
+      - TEAM_ICS_FILE=${TEAM_ICS_FILE:-ical_links.txt}
+      # - DISCORD_MENTION_ROLE_ID=
+      # - DISCORD_MENTION_ROLE_NAME=
+      - DISCORD_PING_EVERYONE=${DISCORD_PING_EVERYONE:-false}
+    # Note: ical_links.txt is bundled in the Docker image, no volume mount needed
     volumes:
       - ./data:/app/data
     healthcheck:
