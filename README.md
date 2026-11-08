@@ -101,14 +101,42 @@ python -m src.test_notification --minutes 15 --team1 "Team A" --team2 "Team B"
 |----------|----------|---------|-------------|
 | `DISCORD_BOT_TOKEN` | Yes | - | Discord bot token |
 | `DISCORD_CHANNEL_ID` | Yes | - | Channel ID for notifications |
-| `TEAMS` | No | - | Comma-separated team names (empty = all matches) |
+| `TEAMS` | No | - | Comma-separated team names (empty = all matches). Feeds use short names, e.g. `OpTic,FaZe` |
 | `NOTIFY_MINUTES_BEFORE` | No | 15 | Minutes before match to send notification |
 | `SCHEDULE_FETCH_INTERVAL` | No | 60 | Minutes between schedule fetches |
 | `DISCORD_MENTION_ROLE_ID` | No | - | Role ID to mention in notifications |
 | `DISCORD_PING_EVERYONE` | No | false | Whether to ping @everyone |
 | `TEAM_IDS` | No | - | Comma-separated team IDs for ICS feeds |
 | `TEAM_ICS_FILE` | No | `ical_links.txt` | Path to file containing team names and ICS URLs |
-| `ICS_BASE_URL` | No | (CDL S3 URL) | Base URL for ICS feeds |
+| `CDL_SEASON` | No | 2027 | Season year used in the ICS feed directory (the 2026-27 season is `2027`) |
+| `ICS_BASE_URL` | No | (CDL S3 URL for `CDL_SEASON`) | Full override of the base URL for ICS feeds |
+
+## Updating for a New Season
+
+Each season the CDL publishes a fresh set of feeds under a new year directory
+(`.../CDL-calendar-sync/<season year>/<team_id>.ics`). The team IDs have been stable
+across seasons so far, even when a team rebrands. To roll over:
+
+1. Bump `DEFAULT_CDL_SEASON` in `src/config.py` (or set `CDL_SEASON`).
+2. Update the year and any renamed teams in `ical_links.txt`.
+3. Check https://callofdutyleague.com/en-us/schedule for teams that joined or left and add or remove their lines.
+
+### 2027 Season Teams
+
+| Team | Feed ID |
+|------|---------|
+| Carolina Royal Ravens | `blt74913de2aae578d0` |
+| Cloud9 New York | `blt5ec51dbb0c4d40cd` |
+| FaZe Vegas | `bltd84beef53d2aa9db` |
+| G2 Minnesota | `bltf5d6e733267e3304` |
+| Los Angeles Thieves | `blt6bedb4aef72255d5` |
+| M80 Boston (formerly Boston Breach) | `bltbbbcefb8c6e34f6d` |
+| Miami Heretics | `blt2a78698b336cfbe6` |
+| OpTic Texas | `blt19237b20a0dd1b07` |
+| Paris Gentle Mates | `bltb5ab3bcd646a72df` |
+| Riyadh Falcons | `blt32eea035bb0bec7f` |
+| Toronto KOI | `blt79528f43f7f383b7` |
+| Vancouver Surge | `bltdf2cc6ed3d3d0bd8` |
 
 ## Configuring Team ICS Feeds
 
@@ -119,14 +147,14 @@ The bot needs team IDs to fetch match schedules from ICS feeds. You can configur
 Create a file named `ical_links.txt` (or set `TEAM_ICS_FILE` to a custom path) with the following format:
 
 ```
-Team Name: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/team_id.ics
-Another Team: https://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/team_id.ics
+Team Name: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2027/team_id.ics
+Another Team: https://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2027/team_id.ics
 ```
 
 Example:
 ```
-Texas OpTic: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/blt19237b20a0dd1b07.ics
-Vegas FaZe: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/bltd84beef53d2aa9db.ics
+OpTic Texas: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2027/blt19237b20a0dd1b07.ics
+FaZe Vegas: webcal://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2027/bltd84beef53d2aa9db.ics
 ```
 
 **Why use a file?** Teams rebrand frequently, and maintaining a file makes it easy to update team names without changing environment variables. The bot will automatically extract team IDs from the URLs.
@@ -143,7 +171,7 @@ TEAM_IDS=blt19237b20a0dd1b07,bltd84beef53d2aa9db
 
 CDL teams have individual ICS calendar feeds. The URL pattern is:
 ```
-https://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026/{team_id}.ics
+https://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2027/{team_id}.ics
 ```
 
 To find a team's ICS feed:

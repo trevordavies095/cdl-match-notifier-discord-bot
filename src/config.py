@@ -11,6 +11,10 @@ logger = setup_logger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
+# Current CDL season (feed directory name). Bump this each new season.
+DEFAULT_CDL_SEASON = "2027"
+ICS_ARCHIVE_ROOT = "https://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync"
+
 
 class Config:
     """Application configuration"""
@@ -42,9 +46,13 @@ class Config:
         self.schedule_fetch_interval = int(os.getenv("SCHEDULE_FETCH_INTERVAL", "60"))
         
         # ICS feed configuration
+        # The CDL publishes one feed directory per season (named by the season
+        # year, e.g. the 2026-27 season lives under ".../CDL-calendar-sync/2027").
+        # CDL_SEASON selects that directory; ICS_BASE_URL overrides the whole URL.
+        self.cdl_season = os.getenv("CDL_SEASON", DEFAULT_CDL_SEASON).strip()
         self.ics_base_url = os.getenv(
             "ICS_BASE_URL",
-            "https://cdl-public-archive.s3.us-east-2.amazonaws.com/CDL-calendar-sync/2026"
+            f"{ICS_ARCHIVE_ROOT}/{self.cdl_season}"
         )
         
         # Team IDs for ICS feeds - can come from file or env var
@@ -99,6 +107,10 @@ class Config:
         except ValueError:
             raise ValueError("DISCORD_CHANNEL_ID must be a numeric channel ID")
         
+        if not self.cdl_season.isdigit():
+            raise ValueError("CDL_SEASON must be a year, e.g. 2027")
+        
+        logger.info(f"CDL season: {self.cdl_season} (ICS base URL: {self.ics_base_url})")
         logger.info(f"Notification lead time: {self.notify_minutes_before} minutes")
         logger.info(f"Schedule fetch interval: {self.schedule_fetch_interval} minutes")
         if self.teams:
